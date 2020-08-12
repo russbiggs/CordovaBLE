@@ -66,7 +66,16 @@ function onDeviceReady() {
         bleDataDiv.innerText = `connected to ${currentDevice}`;
         bleDataDiv.innerText += '\n';
         bleDataDiv.innerText += '\n';
-        poll = setInterval(function(){ bleDataDiv.innerText += 'hello\n'; }, 1000);
+        poll = setInterval(function(){ 
+            // todo replace with readBleData function
+            bleDataDiv.innerText += 'hello\n'; 
+        }, 1000);
+    }
+
+    function readBleData() {
+        ble.read(currentDevice, '', '', function(data){
+            bleDataDiv.innerText += `${JSON.stringify(data)}\n`;
+        });
     }
 
     function disconnectCallback() {
