@@ -38,12 +38,10 @@ body {
 /* Portrait layout (default) */
 .app {
     position:absolute;             /* position in the center of the screen */
-    left:50%;
     height:100vh;                   /* text area height */
-    width:225px;                   /* text area width */
+    width:100%;                 /* text area width */
     text-align:center;
     padding:180px 0px 0px 0px;     /* image height is 200px (bottom 20px are overlapped with text) */
-    margin:-115px 0px 0px -112px;  /* offset vertical: half of image height and text area height */
                                    /* offset horizontal: half of text area width */
 }
 
@@ -103,4 +101,23 @@ h1 {
     body {
         background-image:linear-gradient(to bottom, #585858 0%, #1B1B1B 51%);
     }
+}
+
+.device-list {
+    display:inline-block;
+    margin: 0; 
+    padding: 0;
+    list-style: none;
+}
+
+.btn {
+
+    height:20px;
+    padding: 10px;
+    margin: 5px;
+    background-color: black;
+    color: white;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 20px;  
 }

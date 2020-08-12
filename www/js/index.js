@@ -29,9 +29,19 @@ function onDeviceReady() {
     ble.scan([], 10, function addToList(device) {
         var deviceListElem = document.querySelector('.js-device-list');
         var li = document.createElement('li');
-        li.innerText = 'Name: ' + decive.name + ' ID: ' + device.id;
+        li.classList.add('btn');
+        li.setAttribute('data-mac-add', device.id)
+        li.innerText = 'Name: ' + device.name + ' ID: ' + device.id;
+        li.addEventListener('click', onClick);
         deviceListElem.appendChild(li);
     }, ()=>{console.log('no devices found')});
+
+
+    function onClick(e) {
+        console.log(e.target.getAttribute('data-mac-add'))
+    }
+
+
 }
 
 
