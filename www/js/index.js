@@ -21,9 +21,14 @@
 // See https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready
 document.addEventListener('deviceready', onDeviceReady, false);
 
+
+var currentDevice;
+
+var poll; 
+
 function onDeviceReady() {
     // Cordova is now initialized. Have fun!
-
+    var bleDataDiv = document.querySelector('.js-ble-data');
     console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
     // scan for 10 seconds
     ble.scan([], 10, function addToList(device) {
@@ -38,7 +43,42 @@ function onDeviceReady() {
 
 
     function onClick(e) {
-        console.log(e.target.getAttribute('data-mac-add'))
+        var active = document.querySelector('.btn--active');
+        if (active) {
+            active.classList.remove('btn--active');
+            if (active.getAttribute('data-mac-add') == e.target.getAttribute('data-mac-add')) {
+                console.log('match')
+                ble.disconnect(currentDevice,disconnectCallback)
+                return
+            }
+        }
+        e.target.classList.add('btn--active');
+        if (currentDevice) {
+            ble.disconnect(currentDevice,disconnectCallback);
+        }
+        currentDevice = e.target.getAttribute('data-mac-add')
+        ble.connect(currentDevice, connectCallback, disconnectCallback);
+        bleDataDiv.innerText = 'connecting...\n'
+    }
+
+
+    function connectCallback() {
+        bleDataDiv.innerText = `connected to ${currentDevice}`;
+        bleDataDiv.innerText += '\n';
+        bleDataDiv.innerText += '\n';
+        poll = setInterval(function(){ bleDataDiv.innerText += 'hello\n'; }, 1000);
+    }
+
+    function disconnectCallback() {
+        console.log("disconnectCallback")
+        clearInterval(poll);
+        bleDataDiv.innerText += `disconnecting from ${currentDevice}`;
+        setTimeout(function() {
+            bleDataDiv.innerText = '';
+        }, 1000)
+        
+        currentDevice = undefined;
+
     }
 
 
