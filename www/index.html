@@ -39,16 +39,15 @@
     </head>
     <body>
         <div class="app">
-            <h1>Nearby Devices</h1>
-            <ul class="js-device-list device-list">
-            </ul>
-            <p>BLE Data log</p>
-            <div class="ble-data js-ble-data">
-
+            <div class="disconnect-btn js-disconnect-btn">Disconnect</div>
+            <div class="device-container js-device-container">
+                <h1>Nearby Devices</h1>
+                <ul class="js-device-list device-list">
+                </ul>
             </div>
+            <div class="js-ble-connection-info"></div>
+            <h1 class="js-ble-data"></h1>
         </div>
-
-
         <script src="cordova.js"></script>
         <script src="js/index.js"></script>
     </body>

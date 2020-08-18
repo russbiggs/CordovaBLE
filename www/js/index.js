@@ -28,11 +28,23 @@ var poll;
 
 function onDeviceReady() {
     // Cordova is now initialized. Have fun!
-    var bleDataDiv = document.querySelector('.js-ble-data');
+    var bleData = document.querySelector('.js-ble-data');
+    var connectionInfo = document.querySelector('.js-ble-connection-info');
+    var deviceListElem = document.querySelector('.js-device-list');
+    var deviceContainerElem = document.querySelector('.js-device-container');
     console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
+
+    var disconnectBtn = document.querySelector('.js-disconnect-btn');
+
+
+    disconnectBtn.addEventListener('click', function() {
+        if (currentDevice) {
+            ble.disconnect(currentDevice,disconnectCallback)
+        }
+    });
+
     // scan for 10 seconds
     ble.scan([], 10, function addToList(device) {
-        var deviceListElem = document.querySelector('.js-device-list');
         var li = document.createElement('li');
         li.classList.add('btn');
         li.setAttribute('data-mac-add', device.id)
@@ -47,7 +59,6 @@ function onDeviceReady() {
         if (active) {
             active.classList.remove('btn--active');
             if (active.getAttribute('data-mac-add') == e.target.getAttribute('data-mac-add')) {
-                console.log('match')
                 ble.disconnect(currentDevice,disconnectCallback)
                 return
             }
@@ -58,39 +69,40 @@ function onDeviceReady() {
         }
         currentDevice = e.target.getAttribute('data-mac-add')
         ble.connect(currentDevice, connectCallback, disconnectCallback);
-        bleDataDiv.innerText = 'connecting...\n'
+        connectionInfo.innerText = 'connecting...\n'
     }
 
-
     function connectCallback() {
-        bleDataDiv.innerText = `connected to ${currentDevice}`;
-        bleDataDiv.innerText += '\n';
-        bleDataDiv.innerText += '\n';
+        deviceContainerElem.classList.add('device-container--hidden')
+        connectionInfo.innerText = `connected to ${currentDevice}`;
         poll = setInterval(function(){ 
-            // todo replace with readBleData function
-            bleDataDiv.innerText += 'hello\n'; 
+            readBleData();
         }, 1000);
     }
 
     function readBleData() {
-        ble.read(currentDevice, '', '', function(data){
-            bleDataDiv.innerText += `${JSON.stringify(data)}\n`;
+        ble.read(currentDevice, '0ee1', 'ec0e', function(data){
+            var dv = new DataView(data, 0);
+            var counterValue = dv.getUint32(0);
+            bleData.innerText = `${counterValue}\n`;
         });
     }
 
     function disconnectCallback() {
-        console.log("disconnectCallback")
         clearInterval(poll);
-        bleDataDiv.innerText += `disconnecting from ${currentDevice}`;
+        deviceContainerElem.classList.remove('device-container--hidden')
+        connectionInfo.innerText += `disconnecting from ${currentDevice}`;
+        var active = document.querySelector('.btn--active');
+        if (active) {
+            active.classList.remove('btn--active');
+        }
         setTimeout(function() {
-            bleDataDiv.innerText = '';
+            connectionInfo.innerText = '';
         }, 1000)
-        
         currentDevice = undefined;
+        bleData.innerText = '';
 
     }
-
-
 }
 
 

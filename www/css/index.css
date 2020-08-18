@@ -103,11 +103,26 @@ h1 {
     }
 }
 
+.disconnect-btn {
+    display: inline-block;
+    padding: 15px;
+    background-color:#585858;
+    color: white;
+
+}
+
 .device-list {
     display:inline-block;
     margin: 0; 
     padding: 0;
     list-style: none;
+}
+
+.device-container {
+    display: block;
+}
+.device-container--hidden {
+    display: none;
 }
 
 .btn {
