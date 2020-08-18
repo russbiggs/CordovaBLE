@@ -28,30 +28,41 @@ var poll;
 
 function onDeviceReady() {
     // Cordova is now initialized. Have fun!
+    idbKeyval.get('connection').then(function(connection){
+        console.log(connection)
+        if (connection) {
+            currentDevice = connection;
+            ble.connect(currentDevice, connectCallback, disconnectCallback);
+        } else {
+            scan();
+        }
+
+    })
     var bleData = document.querySelector('.js-ble-data');
     var connectionInfo = document.querySelector('.js-ble-connection-info');
     var deviceListElem = document.querySelector('.js-device-list');
     var deviceContainerElem = document.querySelector('.js-device-container');
-    console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
-
     var disconnectBtn = document.querySelector('.js-disconnect-btn');
-
 
     disconnectBtn.addEventListener('click', function() {
         if (currentDevice) {
-            ble.disconnect(currentDevice,disconnectCallback)
+            ble.disconnect(currentDevice,disconnectCallback);
+            deviceContainerElem.classList.remove('device-container--hidden');
         }
     });
 
-    // scan for 10 seconds
-    ble.scan([], 10, function addToList(device) {
-        var li = document.createElement('li');
-        li.classList.add('btn');
-        li.setAttribute('data-mac-add', device.id)
-        li.innerText = 'Name: ' + device.name + ' ID: ' + device.id;
-        li.addEventListener('click', onClick);
-        deviceListElem.appendChild(li);
-    }, ()=>{console.log('no devices found')});
+    function scan(){
+        ble.scan([], 10, function addToList(device) {
+            var li = document.createElement('li');
+            li.classList.add('btn');
+            li.setAttribute('data-mac-add', device.id)
+            li.innerText = 'Name: ' + device.name + ' ID: ' + device.id;
+            li.addEventListener('click', onClick);
+            deviceListElem.appendChild(li);
+        }, ()=>{console.log('no devices found')});
+    }
+
+
 
 
     function onClick(e) {
@@ -75,6 +86,7 @@ function onDeviceReady() {
     function connectCallback() {
         deviceContainerElem.classList.add('device-container--hidden')
         connectionInfo.innerText = `connected to ${currentDevice}`;
+        idbKeyval.set('connection', currentDevice);
         poll = setInterval(function(){ 
             readBleData();
         }, 1000);
